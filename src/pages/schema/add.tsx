@@ -1,7 +1,8 @@
 import React, { Component, useRef } from "react";
-import { Card,Form,Button,Input, message, Modal, Tag} from "antd";
+import { Card,Form,Button,Input, message, Modal, Tag, Tabs} from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 const { confirm } = Modal;
+const { TabPane } = Tabs;
 
 interface IState {
     formData: FormData,
@@ -210,11 +211,6 @@ export default class AddSchema extends Component<IProps, IState> {
         const value = e.target.value
         const { edge_schema }  = this.state.formData
         const { middles } = edge_schema[index]
-        // Array.from(document.querySelectorAll('.meddle')).forEach((input, forIndex: number) => {
-        //     if(forIndex === index) {
-        //         console.log(input.nodeValue)
-        //     }
-        // })
         if(!middles.includes(value)) {
             middles.push(value)
             edge_schema[index].inputMiddles = ''// 那这条就不生效了
@@ -284,6 +280,89 @@ export default class AddSchema extends Component<IProps, IState> {
             )
         }
     }
+    addEdgeSchemaEle = () => {
+        let schema: EdgeSchemaElement = {
+            schema_name: '',
+            src: '',
+            dst: '',
+            middles: [],
+            inputMiddles: '', // 这个是为了管理输入框
+            attrs: [
+                {
+                    name: '',
+                    type: '',
+                },
+            ]
+        } 
+        const { edge_schema } = this.state.formData
+        edge_schema.push(schema)
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
+    }
+    onEditEdgeTab = (targetKey: any, action: any) => {
+        action ==='add' ? this.addEdgeSchemaEle() : this.removeEdgeSchemaEle(targetKey)
+    }
+
+    removeEdgeSchemaEle = (targetKey: any) => {
+        // 因为我定义的是 index + 'edgeTabPane'
+        const index = Number(targetKey.split('edgeTabPane')[0])
+        const { edge_schema } = this.state.formData
+        if(edge_schema.length <= 1) {
+            // 限制最后一项不能删除
+            return message.warning('已经是最后一项，不能进行删除')
+        }
+        edge_schema.splice(index, 1)
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
+    }
+
+    onEditVertexTab = (targetKey: any, action: any) => {
+        action ==='add' ? this.addVertexSchemaEle() : this.removeVertexSchemaEle(targetKey)
+    }
+    removeVertexSchemaEle = (targetKey: any) => {
+        // 因为我定义的是 index + 'vertexTabPane'
+        const index = Number(targetKey.split('vertexTabPane')[0])
+        const { vertex_schema } = this.state.formData
+        if(vertex_schema.length <= 1) {
+            // 限制最后一项不能删除
+            return message.warning('已经是最后一项，不能进行删除')
+        }
+        vertex_schema.splice(index, 1)
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
+    }
+    addVertexSchemaEle = () => {
+        let schema: VertexSchemaElement = {
+            schema_name: '',
+            vertex_name: '',
+            attrs: [
+                {
+                    name: '',
+                    type: '',
+                },
+            ],
+        } 
+        const { vertex_schema } = this.state.formData
+        vertex_schema.push(schema)
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
+    }
     render(): React.ReactNode {
         const atterEle = (list: Attr[], pIndex: number, type: 'edge'| 'vertex') => {
             return list.map((item: Attr, index: number) => {
@@ -339,90 +418,111 @@ export default class AddSchema extends Component<IProps, IState> {
                 )
             })
         }
-        const edgeSchemaEle = this.state.formData.edge_schema.map((item, index) => {
+        const edgeSchemaEle = () => {
             return (
-                <div style={{ 'marginBottom': 10, }} key={index + 'edge'}>
-                    <Form
-                        labelCol={{ span: 5 }}
-					    wrapperCol={{ span: 19}}>
-                        <Form.Item
-                            label='schema_name:'
-                            name={"schema_name"}
-                            rules={[{ required: true, message: 'Please input schema_name!' }]}
-                        >
-                            <Input
-                                placeholder="请输入schema_name..."
-                                style={{ width: 200, marginRight: 10 }}
-                                onChange={(e) => this.onEdgeSchemaName(e, index)}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            label='src:'
-                            name={"src"}
-                            rules={[{ required: true, message: 'Please input src!' }]}
-                        >
-                            <Input
-                                placeholder="请输入src..."
-                                style={{ width: 200, marginRight: 10 }}
-                                onChange={(e) => this.onEdgeSrc(e, index)}
-                            />
-                        </Form.Item>
-                        <Form.Item label='dst:' name={"dst"}>
-                            <Input
-                                placeholder="请输入dst..."
-                                style={{ width: 200, marginRight: 10 }}
-                                onChange={(e) => this.onEdgeDst(e, index)}
-                            />
-                        </Form.Item>              
-                    </Form>
-                    <div style={{ marginBottom: 10}}>
-                        <div style={{ display: 'flex' }}>
-                            <label style={{ width: 115, textAlign: 'right', marginTop: 3, marginRight: 3 }}>middles:</label>
-                            <Input
-                                className="meddle"
-                                placeholder="请输入并按回车键添加..."
-                                style={{ width: 200 }}
-                                onPressEnter={ (e) => this.onAddMiddles(e, index) }
-                                onChange={(e) => this.onChangeMiddles(e, index) }
-                            />
-                        </div>
-                        { this.renderMiddle(item, index) }
-                    </div>
-                    <div>
-                        { atterEle(item.attrs, index, 'edge') }      
-                    </div>
-                </div>
+                <Tabs size="small" defaultActiveKey="tab1" type="editable-card" onEdit={ this.onEditEdgeTab } >
+                    {this.state.formData.edge_schema.map((item, index) => {
+                        return (
+                            <TabPane tab={ `tab${index + 1}` } key={ index + 'edgeTabPane'}>
+                                <div style={{ 'marginBottom': 10, }} key={index + 'edge'}>
+                                    <Form
+                                        labelCol={{ span: 5 }}
+                                        wrapperCol={{ span: 19}}>
+                                        <Form.Item
+                                            label='schema_name:'
+                                            name={"schema_name"}
+                                            rules={[{ required: true, message: 'Please input schema_name!' }]}
+                                        >
+                                            <Input
+                                                placeholder="请输入schema_name..."
+                                                style={{ width: 200, marginRight: 10 }}
+                                                onChange={(e) => this.onEdgeSchemaName(e, index)}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label='src:'
+                                            name={"src"}
+                                            rules={[{ required: true, message: 'Please input src!' }]}
+                                        >
+                                            <Input
+                                                placeholder="请输入src..."
+                                                style={{ width: 200, marginRight: 10 }}
+                                                onChange={(e) => this.onEdgeSrc(e, index)}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label='dst:' name={"dst"}>
+                                            <Input
+                                                placeholder="请输入dst..."
+                                                style={{ width: 200, marginRight: 10 }}
+                                                onChange={(e) => this.onEdgeDst(e, index)}
+                                            />
+                                        </Form.Item>              
+                                    </Form>
+                                    <div style={{ marginBottom: 10}}>
+                                        <div style={{ display: 'flex' }}>
+                                            <label style={{ width: 115, textAlign: 'right', marginTop: 3, marginRight: 3 }}>middles:</label>
+                                            <Input
+                                                className="meddle"
+                                                placeholder="请输入并按回车键添加..."
+                                                style={{ width: 200 }}
+                                                onPressEnter={ (e) => this.onAddMiddles(e, index) }
+                                                onChange={(e) => this.onChangeMiddles(e, index) }
+                                            />
+                                        </div>
+                                        { this.renderMiddle(item, index) }
+                                    </div>
+                                    <div>
+                                        { atterEle(item.attrs, index, 'edge') }      
+                                    </div>
+                                </div>
+                            </TabPane>
+                        )
+                    })}
+                </Tabs>
             )
-        })
+            
+        }
 
-        const vertexSchemaEle = this.state.formData.vertex_schema.map((item, index) => {
+        const vertexSchemaEle = () => {
             return (
-                <div style={{ 'marginBottom': 10 }} key={index + 'vertex'}>
-                    <Form
-                        labelCol={{ span: 4 }}
-					    wrapperCol={{ span: 20 }}>
-                        <Form.Item label='schema_name:' name={"schema_name"}>
-                            <Input
-                                placeholder="请输入schema_name..."
-                                style={{ width: 200, marginRight: 10 }}
-                                onChange={(e) => this.onVertexSchemaName(e, index)}
-                            />
-                        </Form.Item>
-                        <Form.Item label='vertex_name:' name={"vertex_name"}>
-                            <Input
-                                placeholder="请输入vertex_name..."
-                                style={{ width: 200, marginRight: 10 }}
-                                onChange={(e) => this.onVertexName(e, index)}
-                            />
-                        </Form.Item>           
-                    </Form>
-                    <div>
-                        { atterEle(item.attrs, index, 'vertex') }      
-                    </div>
-                           
-                </div>
+                <Tabs size="small" defaultActiveKey="tab1"  type="editable-card" onEdit={ this.onEditEdgeTab }>
+                    {
+                        this.state.formData.vertex_schema.map((item, index) => {
+                            return (
+                                <TabPane tab={ `tab${index + 1}` } key={ index + 'vertexTabPane'}>
+                                    <div style={{ 'marginBottom': 10 }} key={index + 'vertex'}>
+                                        <Form
+                                            labelCol={{ span: 4 }}
+                                            wrapperCol={{ span: 20 }}>
+                                            <Form.Item label='schema_name:' name={"schema_name"}>
+                                                <Input
+                                                    placeholder="请输入schema_name..."
+                                                    style={{ width: 200, marginRight: 10 }}
+                                                    onChange={(e) => this.onVertexSchemaName(e, index)}
+                                                />
+                                            </Form.Item>
+                                            <Form.Item label='vertex_name:' name={"vertex_name"}>
+                                                <Input
+                                                    placeholder="请输入vertex_name..."
+                                                    style={{ width: 200, marginRight: 10 }}
+                                                    onChange={(e) => this.onVertexName(e, index)}
+                                                />
+                                            </Form.Item>           
+                                        </Form>
+                                        <div>
+                                            { atterEle(item.attrs, index, 'vertex') }      
+                                        </div>
+                                            
+                                    </div>
+                                </TabPane>
+                                
+                            )
+                        })
+                    }
+                </Tabs>
             )
-        })
+            
+        }
 
        
         return(
@@ -453,11 +553,16 @@ export default class AddSchema extends Component<IProps, IState> {
 					</Form.Item>	
 				</Form>
                 <div style={{ height: 500, overflowY: 'auto', width: '100%', boxSizing: 'border-box', display: "flex", flexWrap: 'wrap' }}>
-                    <Card style={{ width: '49%', minWidth: 400, height: 500, overflowY: 'auto', marginRight: 10 }}>
-                        { edgeSchemaEle }
+                    <Card
+                        title="edge Schema"
+                        style={{ width: '49%', minWidth: 400, height: 500, overflowY: 'auto', marginRight: 10 }}
+                    >
+                        {/* <Button type="primary" onClick={ this.addEdgeSchemaEle }>添加分组</Button> */}
+                        { edgeSchemaEle() }
                     </Card>
-                    <Card style={{ width: '49%', minWidth: 400, height: 500, overflowY: 'auto', marginRight: 10 }}>
-                        { vertexSchemaEle }
+                    <Card title="vertex Schema" style={{ width: '49%', minWidth: 400, height: 500, overflowY: 'auto', marginRight: 10 }}>
+                        {/* <Button type="primary" onClick={ this.addVertexSchemaEle }>添加分组</Button> */}
+                        { vertexSchemaEle() }
                     </Card>
                 </div>
                 <div style={{ width: '100%', textAlign: 'center', marginTop: 15 }}>
