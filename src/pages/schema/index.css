@@ -1,0 +1,9 @@
+.c-add-form-left{ 
+    height: 500;
+    overflow-y: 'auto';
+    width: 1000;
+    box-sizing: 'border-box';
+    display: 'flex';
+    flex-wrap: 'wrap';
+    margin-left: 10
+}

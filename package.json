@@ -59,8 +59,11 @@
   "devDependencies": {
     "@ant-design/icons": "^4.5.0",
     "@types/axios": "^0.14.0",
+    "@types/js-cookie": "^3.0.1",
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
+    "@types/react-loadable": "^5.5.6",
+    "@types/react-router-dom": "^5.3.3",
     "@types/webpack-env": "^1.16.3",
     "axios": "^0.24.0",
     "babel-core": "^6.26.3",

@@ -1,5 +1,5 @@
 import axios from "axios";
-import store from "@/store";
+import store from "../store";
 import { Modal } from "antd";
 
 import { getToken } from './auth'
@@ -15,10 +15,10 @@ const service = axios.create({
 service.interceptors.request.use(
   (config) => {
     // 判断用户有没有带token
-    if(store.getState().user.token) {
-      // 如果有token，每一个请求带上token
-      config.headers.Authoriztion = getToken();
-    }
+    // if(store.getState() && store.getState().user && store.getState().user.token) {
+    //   // 如果有token，每一个请求带上token
+    //   config.headers.Authoriztion = getToken();
+    // }
     return config
   },
   (error) => {

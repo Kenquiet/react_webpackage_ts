@@ -7,7 +7,7 @@ const initUserInfo = {
   token: "",
 };
 
-const user = (state = initUserInfo, action) => {
+const user = (state = initUserInfo, action: any) => {
   switch(action.type) {
     case types.USER_SET_USER_TOKEN:
       return {

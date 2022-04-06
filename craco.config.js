@@ -48,14 +48,13 @@ module.exports = {
 			webpackConfig.plugins.map((plugin) => {
 				whenProd(() => {
 				  if (plugin instanceof MiniCssExtractPlugin) {
-					Object.assign(
-						plugin.options, 
+					Object.assign(plugin.options, 
 						{
 							filename: 'static/css/[name].css',
 							chunkFilename: 'static/css/[name].css',
-						},
-						["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
-						["@babel/plugin-proposal-private-methods", { "loose": true }]
+						}, 
+						["@babel/plugin-proposal-private-methods", {"loose": true}],
+						["@babel/plugin-proposal-private-property-in-object", { "loose": true }]
 					)
 				  }
 				})
@@ -94,7 +93,7 @@ module.exports = {
 			port: 8080,
 			proxy: {
 				'/api': {
-				target: 'http://127.0.0.1:3000',
+				target: 'http://127.0.0.1:8080',
 				// target: 'https://xwzyyds.com/',
 				changeOrigin: true,
 				secure: false,
