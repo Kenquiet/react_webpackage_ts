@@ -164,7 +164,6 @@ export default class AddSchema extends Component<IProps, IState> {
         attrs[index].name = value
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -178,7 +177,6 @@ export default class AddSchema extends Component<IProps, IState> {
         attrs[index].type = value
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -194,7 +192,6 @@ export default class AddSchema extends Component<IProps, IState> {
         attrs.push({name: '', type: ''})
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -206,7 +203,6 @@ export default class AddSchema extends Component<IProps, IState> {
         attrs.splice(index, 1)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -221,7 +217,6 @@ export default class AddSchema extends Component<IProps, IState> {
             middles.push(value)
             this.setState((state) => ({
                 formData: {
-                    ...state,
                     ...this.state.formData
                 }
             }))
@@ -233,7 +228,6 @@ export default class AddSchema extends Component<IProps, IState> {
         edge_schema[index].inputMiddles = value
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -249,7 +243,6 @@ export default class AddSchema extends Component<IProps, IState> {
                 middles.splice(mIndex, 1)
                 this.setState((state) => ({
                     formData: {
-                        ...state,
                         ...this.state.formData
                     }
                 }))
@@ -277,7 +270,6 @@ export default class AddSchema extends Component<IProps, IState> {
         edge_schema.push(schema)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -297,7 +289,6 @@ export default class AddSchema extends Component<IProps, IState> {
         edge_schema.splice(index, 1)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -317,7 +308,6 @@ export default class AddSchema extends Component<IProps, IState> {
         vertex_schema.splice(index, 1)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -337,7 +327,6 @@ export default class AddSchema extends Component<IProps, IState> {
         vertex_schema.push(schema)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
