@@ -48,10 +48,15 @@ module.exports = {
 			webpackConfig.plugins.map((plugin) => {
 				whenProd(() => {
 				  if (plugin instanceof MiniCssExtractPlugin) {
-					Object.assign(plugin.options, {
-					  filename: 'static/css/[name].css',
-					  chunkFilename: 'static/css/[name].css',
-					})
+					Object.assign(
+						plugin.options, 
+						{
+							filename: 'static/css/[name].css',
+							chunkFilename: 'static/css/[name].css',
+						},
+						["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
+						["@babel/plugin-proposal-private-methods", { "loose": true }]
+					)
 				  }
 				})
 				return plugin
