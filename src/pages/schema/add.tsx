@@ -1,8 +1,9 @@
-import React, { Component, useRef } from "react";
+import React, { Component } from "react";
 import { Card,Form,Button,Input, message, Modal, Tag, Tabs} from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
+const { Search } = Input
 
 interface IState {
     formData: FormData,
@@ -82,6 +83,9 @@ export default class AddSchema extends Component<IProps, IState> {
     componentDidMount = () => {
         console.log('页面初始化请求')
     }
+    componentWillUnmount() {
+        this.setState = () => false;
+     }
 
     // 修改图名称
     onGraphNameChange = (e: any) => {
@@ -207,13 +211,14 @@ export default class AddSchema extends Component<IProps, IState> {
             }
         }))
     }
-    onAddMiddles = (e: any, index: number) => {
-        const value = e.target.value
+    onAddMiddles = (e: any, value: string, index: number) => {
+        if(value === '') {
+            return
+        }
         const { edge_schema }  = this.state.formData
         const { middles } = edge_schema[index]
         if(!middles.includes(value)) {
             middles.push(value)
-            edge_schema[index].inputMiddles = ''// 那这条就不生效了
             this.setState((state) => ({
                 formData: {
                     ...state,
@@ -236,49 +241,23 @@ export default class AddSchema extends Component<IProps, IState> {
     onRemoveMiddle = (e: any, index: number, mIndex: number) => {
         const { middles } = this.state.formData.edge_schema[index]
         const value = middles[mIndex]
+        e.preventDefault() // 关闭默认删除行为
         confirm({
             title: `你确定要删除 + "${value}"吗?`,
             icon: <ExclamationCircleOutlined />,
             onOk: () => {
-              middles.splice(mIndex, 1)
-              this.setState((state) => ({
-                formData: {
-                    ...state,
-                    ...this.state.formData
-                }
-            }))
+                middles.splice(mIndex, 1)
+                this.setState((state) => ({
+                    formData: {
+                        ...state,
+                        ...this.state.formData
+                    }
+                }))
             },
             onCancel() {
               message.info('取消删除~')
             },
           });
-    }
-    renderMiddle = (item: EdgeSchemaElement, index: number) => {
-        if(item.middles.length > 0) {
-            return (
-                <div style={{
-                    padding: 10,
-                    marginLeft: 115,
-                    borderWidth: 1,
-                    borderStyle: 'solid',
-                    borderColor: '#eee',
-                    marginTop: 5
-                }}>
-                    {
-                        item.middles.map((middle:string, mIndex: number) => {
-                            return (
-                                <Tag key={ `${index}middle${mIndex}`  }
-                                    closable
-                                    color="blue"
-                                    onClose={ (e) => this.onRemoveMiddle(e, index, mIndex) }>
-                                    { middle }
-                                </Tag>
-                            )
-                        })
-                    }
-                </div>
-            )
-        }
     }
     addEdgeSchemaEle = () => {
         let schema: EdgeSchemaElement = {
@@ -363,6 +342,33 @@ export default class AddSchema extends Component<IProps, IState> {
             }
         }))
     }
+    renderMiddle = (item: EdgeSchemaElement, index: number) => {
+        if(item.middles.length > 0) {
+            return (
+                <div style={{
+                    padding: 10,
+                    marginLeft: 115,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: '#eee',
+                    marginTop: 5
+                }}>
+                    {
+                        item.middles.map((middle:string, mIndex: number) => {
+                            return (
+                                <Tag key={ `${index}middle${mIndex}`  }
+                                    closable
+                                    color="blue"
+                                    onClose={ (e) => this.onRemoveMiddle(e, index, mIndex) }>
+                                    { middle }
+                                </Tag>
+                            )
+                        })
+                    }
+                </div>
+            )
+        }
+    }
     render(): React.ReactNode {
         const atterEle = (list: Attr[], pIndex: number, type: 'edge'| 'vertex') => {
             return list.map((item: Attr, index: number) => {
@@ -381,6 +387,7 @@ export default class AddSchema extends Component<IProps, IState> {
                             >
                                 <Input
                                     placeholder="请输入name..."
+                                    autoComplete="off"
                                     style={{ width: 100, marginRight: 10 }}
                                     onChange={(e) => this.onNameValueChange({e, index, type, pIndex})}
                                 />
@@ -392,6 +399,7 @@ export default class AddSchema extends Component<IProps, IState> {
                             >
                                 <Input
                                     placeholder="请输入type..."
+                                    autoComplete="off"
                                     style={{ width: 100, marginRight: 10 }}
                                     onChange={(e) => this.onTypeValueChange({e, index, type, pIndex})}
                                 />
@@ -435,6 +443,7 @@ export default class AddSchema extends Component<IProps, IState> {
                                         >
                                             <Input
                                                 placeholder="请输入schema_name..."
+                                                autoComplete="off"
                                                 style={{ width: 200, marginRight: 10 }}
                                                 onChange={(e) => this.onEdgeSchemaName(e, index)}
                                             />
@@ -446,6 +455,7 @@ export default class AddSchema extends Component<IProps, IState> {
                                         >
                                             <Input
                                                 placeholder="请输入src..."
+                                                autoComplete="off"
                                                 style={{ width: 200, marginRight: 10 }}
                                                 onChange={(e) => this.onEdgeSrc(e, index)}
                                             />
@@ -453,6 +463,7 @@ export default class AddSchema extends Component<IProps, IState> {
                                         <Form.Item label='dst:' name={"dst"}>
                                             <Input
                                                 placeholder="请输入dst..."
+                                                autoComplete="off"
                                                 style={{ width: 200, marginRight: 10 }}
                                                 onChange={(e) => this.onEdgeDst(e, index)}
                                             />
@@ -461,12 +472,12 @@ export default class AddSchema extends Component<IProps, IState> {
                                     <div style={{ marginBottom: 10}}>
                                         <div style={{ display: 'flex' }}>
                                             <label style={{ width: 115, textAlign: 'right', marginTop: 3, marginRight: 3 }}>middles:</label>
-                                            <Input
-                                                className="meddle"
-                                                placeholder="请输入并按回车键添加..."
-                                                style={{ width: 200 }}
-                                                onPressEnter={ (e) => this.onAddMiddles(e, index) }
-                                                onChange={(e) => this.onChangeMiddles(e, index) }
+                                            <Search
+                                                placeholder="请输入并点击添加键..."
+                                                allowClear
+                                                enterButton="添加"
+                                                style={{ width: 300 }}
+                                                onSearch={(value, e) => this.onAddMiddles(e, value, index)}
                                             />
                                         </div>
                                         { this.renderMiddle(item, index) }
@@ -497,6 +508,7 @@ export default class AddSchema extends Component<IProps, IState> {
                                             <Form.Item label='schema_name:' name={"schema_name"}>
                                                 <Input
                                                     placeholder="请输入schema_name..."
+                                                    autoComplete="off"
                                                     style={{ width: 200, marginRight: 10 }}
                                                     onChange={(e) => this.onVertexSchemaName(e, index)}
                                                 />
@@ -504,6 +516,7 @@ export default class AddSchema extends Component<IProps, IState> {
                                             <Form.Item label='vertex_name:' name={"vertex_name"}>
                                                 <Input
                                                     placeholder="请输入vertex_name..."
+                                                    autoComplete="off"
                                                     style={{ width: 200, marginRight: 10 }}
                                                     onChange={(e) => this.onVertexName(e, index)}
                                                 />
@@ -549,7 +562,7 @@ export default class AddSchema extends Component<IProps, IState> {
                             return Promise.resolve()
                         }
                     }]}>
-                        <Input placeholder="请输入graph_name..." onChange={ this.onGraphNameChange }></Input>   
+                        <Input placeholder="请输入graph_name..."  autoComplete="off" onChange={ this.onGraphNameChange }></Input>   
 					</Form.Item>	
 				</Form>
                 <div style={{ height: 500, overflowY: 'auto', width: '100%', boxSizing: 'border-box', display: "flex", flexWrap: 'wrap' }}>
