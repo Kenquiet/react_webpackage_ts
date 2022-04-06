@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card,Form,Button,Input,message, Modal} from "antd";
+import { Card,Form,Button,Input, message, Modal} from "antd";
 
 interface IState {
     formData: FormData
@@ -88,72 +88,14 @@ export default class AddSchema extends Component<IProps, IState> {
             }
         }))
     }
-	onEdgeBaseValueChange = (e: any, index: number, type: string) => {
-        let value = e.target.value
-        const { edge_schema } = this.state.formData
-        console.log(type)
-        if(type === 'schema_name') {            
-            edge_schema[index].schema_name = value
-        } else if(type === 'src') {
-            edge_schema[index].src = value
-        }
-        else if(type === 'dst') {
-            edge_schema[index].dst = value
-        }
-        this.setState((state) => ({
-            formData: {
-                ...state.formData,
-                edge_schema: [...edge_schema]
-            }
-        }))
+    submitButtonClick = () =>{
+        console.log(this.state.formData)
     }
-
-    onOneEdgeMiddleValueChange = (e: any, perIndex: number, index: number) => {
-        let value = e.target.value
-        const { edge_schema } = this.state.formData
-        const { middles } = edge_schema[perIndex]
-        middles[index] = value
-        edge_schema[perIndex].middles = middles
-        this.setState((state) => ({
-            formData: {
-                ...state.formData,
-                edge_schema: [...edge_schema]
-            }
-        }))
-    }
-
-    onOneAttrValueChange = (e: any, schemaType: string, perIndex: number, index: number, type: string) => {
-        let value = e.target.value
-        const { edge_schema, vertex_schema } = this.state.formData
-        const { attrs } = (schemaType == 'edge') ? edge_schema[perIndex] : vertex_schema[perIndex]
-        if(type = 'name') {
-            attrs[index].name = value
-        } else {
-            attrs[index].type = value
-        }
-        if(schemaType == 'edge') {    
-            edge_schema[perIndex].attrs = attrs
-        } else {    
-            vertex_schema[perIndex].attrs = attrs
-        }
-        this.setState((state) => ({
-            formData: {
-                ...state.formData,
-                edge_schema: [...edge_schema],
-                vertex_schema: [...vertex_schema]
-            }
-        }))
-    }
-
-    onVertexBaseValueChange = (e: any, index: number, type: string) => {
+    // 修改vertex
+    onVertexSchemaName = (e: any, index: number) => {
         let value = e.target.value
         const { vertex_schema } = this.state.formData
-        console.log(type)
-        if(type === 'schema_name') {            
-            vertex_schema[index].schema_name = value
-        } else if(type === 'vertex_name') {
-            vertex_schema[index].vertex_name = value
-        }
+        vertex_schema[index].schema_name = value
         this.setState((state) => ({
             formData: {
                 ...state.formData,
@@ -161,105 +103,213 @@ export default class AddSchema extends Component<IProps, IState> {
             }
         }))
     }
-
-    addButtonClick = (index: number, type: string) => {
-        if(type === 'edge') {
-            this.setState((state) => ({
-                formData: {
-                    ...state.formData,
-                    edge_schema: [
-                        ...state.formData.edge_schema, 
-                        {
-                            schema_name: '',
-                            src: '',
-                            dst: '',
-                            middles: [],
-                            attrs: [
-                                {
-                                    name: '',
-                                    type: '',
-                                },
-                            ],
-                        }
-                    ]
-                }
-            }))
-        } else {
-            this.setState((state) => ({
-                formData: {
-                    ...state.formData,
-                    vertex_schema: [
-                        ...state.formData.vertex_schema, 
-                        {
-                            schema_name: '',
-                            vertex_name: '',
-                            attrs: [
-                                {
-                                    name: '',
-                                    type: '',
-                                },
-                            ],
-                        }
-                    ]
-                }
-            }))
-        }   
+    onVertexName = (e: any, index: number) => {
+        let value = e.target.value
+        const { vertex_schema } = this.state.formData
+        vertex_schema[index].vertex_name = value
+        this.setState((state) => ({
+            formData: {
+                ...state.formData,
+                vertex_schema: [...vertex_schema]
+            }
+        }))
     }
-    submitButtonClick = () =>{
+    onEdgeSchemaName = (e: any, index: number) => {
+        let value = e.target.value
+        const { edge_schema } = this.state.formData
+        edge_schema[index].schema_name = value
+        this.setState((state) => ({
+            formData: {
+                ...state.formData,
+                edge_schema: [...edge_schema]
+            }
+        }))
+    }
+    onEdgeSrc = (e: any, index: number) => {
+        let value = e.target.value
+        const { edge_schema } = this.state.formData
+        edge_schema[index].src = value
+        this.setState((state) => ({
+            formData: {
+                ...state.formData,
+                edge_schema: [...edge_schema]
+            }
+        }))
+    }
+    onEdgeDst = (e: any, index: number) => {
+        let value = e.target.value
+        const { edge_schema } = this.state.formData
+        edge_schema[index].dst = value
+        this.setState((state) => ({
+            formData: {
+                ...state.formData,
+                edge_schema: [...edge_schema]
+            }
+        }))
+    }
+    onNameValueChange = (context: any) => {
+        const { e, type, index , pIndex } = context
+        const value = e.target.value
+        const schema =  type === 'edge' ? this.state.formData.edge_schema : this.state.formData.vertex_schema
+        const { attrs } = schema[pIndex]
+        attrs[index].name = value
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
+    }
 
+    onTypeValueChange = (context: any) => {
+        const { e, type, index , pIndex } = context
+        const value = e.target.value
+        const schema =  type === 'edge' ? this.state.formData.edge_schema : this.state.formData.vertex_schema
+        const { attrs } = schema[pIndex]
+        attrs[index].type = value
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
+    }
+
+    onAddAttr = (context: any) => {
+        const { type, index, pIndex } = context
+        const schema =  type === 'edge' ? this.state.formData.edge_schema : this.state.formData.vertex_schema
+        const { attrs } = schema[pIndex]
+        if(attrs[index].name === '' || attrs[index].type === '') {
+            return message.warning('name 或 type不能为空,请填写完整后再添加!')
+        }
+        attrs.push({name: '', type: ''})
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
+    }
+    onRemoveAttr = (context: any) => {
+        const { type, index, pIndex } = context
+        const schema =  type === 'edge' ? this.state.formData.edge_schema : this.state.formData.vertex_schema
+        const { attrs } = schema[pIndex]
+        attrs.splice(index, 1)
+        this.setState((state) => ({
+            formData: {
+                ...state,
+                ...this.state.formData
+            }
+        }))
     }
 
 
     render(): React.ReactNode {
+        const atterEle = (list: Attr[], pIndex: number, type: 'edge'| 'vertex') => {
+            return list.map((item: Attr, index: number) => {
+                return (
+                    <Card>
+                        <Form
+                            labelCol={{ span: 8 }}
+                            wrapperCol={{ span: 16 }}
+                            layout="inline"
+                            key={index}
+                        >
+                            <Form.Item label='name: ' name={ 'name' }>
+                                <Input
+                                    style={{ width: 100, marginRight: 10 }}
+                                    onChange={(e) => this.onNameValueChange({e, index, type, pIndex})}
+                                />
+                            </Form.Item>
+                            <Form.Item label='type: ' name={ 'type' }>
+                                <Input
+                                    style={{ width: 100, marginRight: 10 }}
+                                    onChange={(e) => this.onTypeValueChange({e, index, type, pIndex})}
+                                />
+                            </Form.Item>
+                            <Form.Item>
+                                <div style={{ display: 'flex' }}>
+                                    <Button
+                                        type="primary" style={{ marginRight: 10 }}
+                                        onClick={() => this.onAddAttr({index, type, pIndex})}
+                                        disabled={ index !== list.length - 1 }
+                                    >添加</Button>
+                                    {
+                                        (index > 0 && (index === list.length - 1))
+                                        && <Button
+                                            type="primary"
+                                            danger
+                                            onClick={() => this.onRemoveAttr({index, type, pIndex})}
+                                        >删除</Button>
+                                    }
+                                </div>
+                            </Form.Item>
+                        </Form>
+                    </Card>
+                )
+            })
+        }
         const edgeSchemaEle = this.state.formData.edge_schema.map((item, index) => {
             return (
-                <div style={{ 'marginBottom': 10, display: 'flex'}} key={index + 'first'}>
-                    <label style={{ width: 50, textAlign: 'right',paddingTop: 8, fontWeight: 700 }}>名称：</label> 
-                    <Input
-                        style={{ width: 200, marginRight: 10 }}
-                        onChange={(e) => this.onEdgeBaseValueChange(e, index, 'schema_name')}
-                    />
+                <div style={{ 'marginBottom': 10, }} key={index + 'first'}>
+                     <Form
+                        labelCol={{ span: 4 }}
+					    wrapperCol={{ span: 20 }}>
+                        <Form.Item label='schema_name:' name={"schema_name"}>
+                            <Input
+                                style={{ width: 200, marginRight: 10 }}
+                                onChange={(e) => this.onEdgeSchemaName(e, index)}
+                            />
+                        </Form.Item>
+                        <Form.Item label='src:' name={"src"}>
+                            <Input
+                                style={{ width: 200, marginRight: 10 }}
+                                onChange={(e) => this.onEdgeSrc(e, index)}
+                            />
+                        </Form.Item>
+                        <Form.Item label='dst:' name={"dst"}>
+                            <Input
+                                style={{ width: 200, marginRight: 10 }}
+                                onChange={(e) => this.onEdgeDst(e, index)}
+                            />
+                        </Form.Item>              
+                    </Form>
                 
-                    <Button
-                        type="primary" style={{ marginRight: 10 }}
-                        onClick={() => this.addButtonClick(index, 'edge')}
-                        disabled={ index !== this.state.formData.edge_schema.length - 1 }
-                    >添加</Button>
-                    {
-                        (index > 0 && (index === this.state.formData.vertex_schema.length - 1))
-                        && <Button
-                            type="primary"
-                            // onClick={() => this.removeButtonClick(item, index, 'edge')}
-                        >删除</Button>
-                    }
+                    <div>
+                        { atterEle(item.attrs, index, 'edge') }      
+                    </div>
                 </div>
             )
         })
 
         const vertexSchemaEle = this.state.formData.vertex_schema.map((item, index) => {
             return (
-                <div style={{ 'marginBottom': 10, display: 'flex'}} key={index + 'first'}>
-                    <label style={{ width: 50, textAlign: 'right',paddingTop: 8, fontWeight: 700 }}>名称：</label> 
-                    <Input
-                        style={{ width: 200, marginRight: 10 }}
-                        onChange={(e) => this.onEdgeBaseValueChange(e, index, 'schema_name')}
-                    />
-                
-                    <Button
-                        type="primary" style={{ marginRight: 10 }}
-                        onClick={() => this.addButtonClick(index, 'edge')}
-                        disabled={ index !== this.state.formData.edge_schema.length - 1 }
-                    >添加</Button>
-                    {
-                        (index > 0 && (index === this.state.formData.vertex_schema.length - 1))
-                        && <Button
-                            type="primary"
-                            // onClick={() => this.removeButtonClick(item, index, 'edge')}
-                        >删除</Button>
-                    }
+                <div style={{ 'marginBottom': 10 }} key={index + 'first'}>
+                    <Form
+                        labelCol={{ span: 4 }}
+					    wrapperCol={{ span: 20 }}>
+                        <Form.Item label='schema_name:' name={"schema_name"}>
+                            <Input
+                                style={{ width: 200, marginRight: 10 }}
+                                onChange={(e) => this.onVertexSchemaName(e, index)}
+                            />
+                        </Form.Item>
+                        <Form.Item label='vertex_name:' name={"vertex_name"}>
+                            <Input
+                                style={{ width: 200, marginRight: 10 }}
+                                onChange={(e) => this.onVertexName(e, index)}
+                            />
+                        </Form.Item>           
+                    </Form>
+                    <div>
+                        { atterEle(item.attrs, index, 'vertex') }      
+                    </div>
+                           
                 </div>
             )
         })
+
+       
         return(
             <Modal
                 title="添加"

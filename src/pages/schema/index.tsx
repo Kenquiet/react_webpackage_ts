@@ -1,5 +1,5 @@
 import React, { useState, Component } from 'react';
-import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd';
+import { Table,  Button } from 'antd';
 
 import Add from './add'
 
