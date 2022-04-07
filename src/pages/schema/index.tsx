@@ -133,7 +133,7 @@ export default class Schema extends Component<any, IState> {
                 return (
                   <span>
                     <Button size='small' type='primary'>编辑</Button> 
-                    <Button size='small' type='primary' danger>删除</Button> 
+                    <Button size='small' type='danger'>删除</Button> 
                   </span>
                 );
               },
@@ -159,7 +159,6 @@ export default class Schema extends Component<any, IState> {
                         x: 'max-content',
                         y: 'max-content'
                     }}
-                    rowClassName="editable-row"
                     pagination={{
                         total: this.state.total,
                         pageSize: this.state.pageSize,
@@ -167,7 +166,7 @@ export default class Schema extends Component<any, IState> {
                     }}
                     onChange={ this.onChange }
                 />
-                <Add visible={this.state.addVisible} callback={ this.cancelAdd }/>
+                <Add visible={ this.state.addVisible } callback={ this.cancelAdd }/>
             </div>
            
         );

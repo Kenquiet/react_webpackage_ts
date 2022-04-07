@@ -1,10 +1,12 @@
-import React, { Component, useRef } from "react";
+import React, { Component } from "react";
 import { Card,Form,Button,Input, message, Modal, Tag, Tabs} from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { FormComponentProps } from 'antd/es/form';
+import { connect } from "react-redux";
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 
-interface IState {
+interface IState{
     formData: FormData,
 }
 interface FormData {
@@ -32,12 +34,12 @@ interface Attr {
     type: string | number
 }
 
-interface IProps {
+interface IProps extends FormComponentProps{
     visible: boolean,
     callback: () => void
 }
 
-export default class AddSchema extends Component<IProps, IState> {
+class AddSchema extends Component<IProps, IState> {
     constructor(props: any) {
         super(props)
         this.state = {
@@ -270,7 +272,7 @@ export default class AddSchema extends Component<IProps, IState> {
                                 <Tag key={ `${index}middle${mIndex}`  }
                                     closable
                                     color="blue"
-                                    onClose={ (e) => this.onRemoveMiddle(e, index, mIndex) }>
+                                    onClose={ (e: any) => this.onRemoveMiddle(e, index, mIndex) }>
                                     { middle }
                                 </Tag>
                             )
@@ -364,6 +366,7 @@ export default class AddSchema extends Component<IProps, IState> {
         }))
     }
     render(): React.ReactNode {
+        const { getFieldDecorator } = this.props.form;
         const atterEle = (list: Attr[], pIndex: number, type: 'edge'| 'vertex') => {
             return list.map((item: Attr, index: number) => {
                 return (
@@ -374,27 +377,27 @@ export default class AddSchema extends Component<IProps, IState> {
                             layout="inline"
                             key={index + 'atterEle' + type}
                         >
-                            <Form.Item
-                                label='name: '
-                                name={ 'name' }
-                                rules={[{ required: true, message: 'Please input name!' }]}
-                            >
-                                <Input
-                                    placeholder="请输入name..."
-                                    style={{ width: 100, marginRight: 10 }}
-                                    onChange={(e) => this.onNameValueChange({e, index, type, pIndex})}
-                                />
+                            <Form.Item label='name: '>
+                                {getFieldDecorator('name', {
+                                    rules: [{ required: true, message: 'Please input name!' }]
+                                })(
+                                    <Input
+                                        placeholder="请输入name..."
+                                        style={{ width: 100, marginRight: 10 }}
+                                        onChange={(e) => this.onNameValueChange({e, index, type, pIndex})}
+                                    />
+                                )} 
                             </Form.Item>
-                            <Form.Item
-                                label='type: '
-                                name={ 'type' }
-                                rules={[{ required: true, message: 'Please input type!' }]}
-                            >
-                                <Input
-                                    placeholder="请输入type..."
-                                    style={{ width: 100, marginRight: 10 }}
-                                    onChange={(e) => this.onTypeValueChange({e, index, type, pIndex})}
-                                />
+                            <Form.Item label='type: '>
+                                {getFieldDecorator('type', {
+                                    rules: [{ required: true, message: 'Please input type!' }]
+                                })(
+                                    <Input
+                                        placeholder="请输入type..."
+                                        style={{ width: 100, marginRight: 10 }}
+                                        onChange={(e) => this.onTypeValueChange({e, index, type, pIndex})}
+                                    />
+                                )} 
                             </Form.Item>
                             <Form.Item>
                                 <div style={{ display: 'flex' }}>
@@ -406,8 +409,7 @@ export default class AddSchema extends Component<IProps, IState> {
                                     {
                                         (index > 0 && (index === list.length - 1))
                                         && <Button
-                                            type="primary"
-                                            danger
+                                            type="danger"
                                             onClick={() => this.onRemoveAttr({index, type, pIndex})}
                                         >删除</Button>
                                     }
@@ -428,34 +430,36 @@ export default class AddSchema extends Component<IProps, IState> {
                                     <Form
                                         labelCol={{ span: 5 }}
                                         wrapperCol={{ span: 19}}>
-                                        <Form.Item
-                                            label='schema_name:'
-                                            name={"schema_name"}
-                                            rules={[{ required: true, message: 'Please input schema_name!' }]}
-                                        >
-                                            <Input
-                                                placeholder="请输入schema_name..."
-                                                style={{ width: 200, marginRight: 10 }}
-                                                onChange={(e) => this.onEdgeSchemaName(e, index)}
-                                            />
+                                        <Form.Item label='schema_name:'>
+                                            {getFieldDecorator('schema_name', {
+                                                rules: [{ required: true, message: 'Please input schema_name!' }]
+                                            })(
+                                                <Input
+                                                    placeholder="请输入schema_name..."
+                                                    style={{ width: 200, marginRight: 10 }}
+                                                    onChange={(e) => this.onEdgeSchemaName(e, index)}
+                                                />
+                                            )}
                                         </Form.Item>
-                                        <Form.Item
-                                            label='src:'
-                                            name={"src"}
-                                            rules={[{ required: true, message: 'Please input src!' }]}
-                                        >
-                                            <Input
-                                                placeholder="请输入src..."
-                                                style={{ width: 200, marginRight: 10 }}
-                                                onChange={(e) => this.onEdgeSrc(e, index)}
-                                            />
+                                        <Form.Item label='src:'>
+                                            {getFieldDecorator('src', {
+                                                rules: [{ required: true, message: 'Please input src!' }]
+                                            })(
+                                                <Input
+                                                    placeholder="请输入src..."
+                                                    style={{ width: 200, marginRight: 10 }}
+                                                    onChange={(e) => this.onEdgeSrc(e, index)}
+                                                />
+                                            )}
                                         </Form.Item>
-                                        <Form.Item label='dst:' name={"dst"}>
-                                            <Input
-                                                placeholder="请输入dst..."
-                                                style={{ width: 200, marginRight: 10 }}
-                                                onChange={(e) => this.onEdgeDst(e, index)}
-                                            />
+                                        <Form.Item label='dst:'>
+                                            {getFieldDecorator('dst')(
+                                                <Input
+                                                    placeholder="请输入dst..."
+                                                    style={{ width: 200, marginRight: 10 }}
+                                                    onChange={(e) => this.onEdgeDst(e, index)}
+                                                />
+                                            )}
                                         </Form.Item>              
                                     </Form>
                                     <div style={{ marginBottom: 10}}>
@@ -494,19 +498,23 @@ export default class AddSchema extends Component<IProps, IState> {
                                         <Form
                                             labelCol={{ span: 4 }}
                                             wrapperCol={{ span: 20 }}>
-                                            <Form.Item label='schema_name:' name={"schema_name"}>
-                                                <Input
-                                                    placeholder="请输入schema_name..."
-                                                    style={{ width: 200, marginRight: 10 }}
-                                                    onChange={(e) => this.onVertexSchemaName(e, index)}
-                                                />
+                                            <Form.Item label='schema_name:'>
+                                                {getFieldDecorator('schema_name')(
+                                                    <Input
+                                                        placeholder="请输入schema_name..."
+                                                        style={{ width: 200, marginRight: 10 }}
+                                                        onChange={(e) => this.onVertexSchemaName(e, index)}
+                                                    />
+                                                )}
                                             </Form.Item>
-                                            <Form.Item label='vertex_name:' name={"vertex_name"}>
-                                                <Input
-                                                    placeholder="请输入vertex_name..."
-                                                    style={{ width: 200, marginRight: 10 }}
-                                                    onChange={(e) => this.onVertexName(e, index)}
-                                                />
+                                            <Form.Item label='vertex_name:'>
+                                                {getFieldDecorator('vertex_name')(
+                                                    <Input
+                                                        placeholder="请输入vertex_name..."
+                                                        style={{ width: 200, marginRight: 10 }}
+                                                        onChange={(e) => this.onVertexName(e, index)}
+                                                    />
+                                                )}
                                             </Form.Item>           
                                         </Form>
                                         <div>
@@ -540,16 +548,21 @@ export default class AddSchema extends Component<IProps, IState> {
 					autoComplete="off"
 					style={{ background: '#fff', padding: 10, margin: 10, width: '50%' }}
 				>
-					<Form.Item label='图名:' name={'graph_name'} rules={[{
-                        type: 'string',
-                        validator: (rule, value) => {
-                            if(value === '' || value === undefined) {
-                                return Promise.reject('图名不能为空！')
-                            }
-                            return Promise.resolve()
-                        }
-                    }]}>
-                        <Input placeholder="请输入graph_name..." onChange={ this.onGraphNameChange }></Input>   
+					<Form.Item label='图名:'>
+                        {getFieldDecorator('graph_name', {
+                            rules: [{
+                                type: 'string',
+                                validator: (rule, value) => {
+                                    if(value === '' || value === undefined) {
+                                        return Promise.reject('图名不能为空！')
+                                    }
+                                    return Promise.resolve()
+                                }
+                            }]
+                        })(
+                            <Input placeholder="请输入graph_name..." onChange={ this.onGraphNameChange }></Input>   
+                        )}
+                        
 					</Form.Item>	
 				</Form>
                 <div style={{ height: 500, overflowY: 'auto', width: '100%', boxSizing: 'border-box', display: "flex", flexWrap: 'wrap' }}>
@@ -580,3 +593,6 @@ export default class AddSchema extends Component<IProps, IState> {
         )
     }
 }
+export default Form.create<IProps>()(
+    connect()(AddSchema)
+)
