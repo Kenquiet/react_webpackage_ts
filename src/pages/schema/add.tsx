@@ -5,6 +5,7 @@ import { FormComponentProps } from 'antd/es/form';
 import { connect } from "react-redux";
 const { confirm } = Modal;
 const { TabPane } = Tabs;
+const { Search } = Input
 
 interface IState{
     formData: FormData,
@@ -84,6 +85,9 @@ class AddSchema extends Component<IProps, IState> {
     componentDidMount = () => {
         console.log('页面初始化请求')
     }
+    componentWillUnmount() {
+        this.setState = () => false;
+     }
 
     // 修改图名称
     onGraphNameChange = (e: any) => {
@@ -162,7 +166,6 @@ class AddSchema extends Component<IProps, IState> {
         attrs[index].name = value
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -176,7 +179,6 @@ class AddSchema extends Component<IProps, IState> {
         attrs[index].type = value
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -192,7 +194,6 @@ class AddSchema extends Component<IProps, IState> {
         attrs.push({name: '', type: ''})
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -204,21 +205,20 @@ class AddSchema extends Component<IProps, IState> {
         attrs.splice(index, 1)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
     }
-    onAddMiddles = (e: any, index: number) => {
-        const value = e.target.value
+    onAddMiddles = (e: any, value: string, index: number) => {
+        if(value === '') {
+            return
+        }
         const { edge_schema }  = this.state.formData
         const { middles } = edge_schema[index]
         if(!middles.includes(value)) {
             middles.push(value)
-            edge_schema[index].inputMiddles = ''// 那这条就不生效了
             this.setState((state) => ({
                 formData: {
-                    ...state,
                     ...this.state.formData
                 }
             }))
@@ -230,7 +230,6 @@ class AddSchema extends Component<IProps, IState> {
         edge_schema[index].inputMiddles = value
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -238,17 +237,17 @@ class AddSchema extends Component<IProps, IState> {
     onRemoveMiddle = (e: any, index: number, mIndex: number) => {
         const { middles } = this.state.formData.edge_schema[index]
         const value = middles[mIndex]
+        e.preventDefault() // 关闭默认删除行为
         confirm({
             title: `你确定要删除 + "${value}"吗?`,
             icon: <ExclamationCircleOutlined />,
             onOk: () => {
-              middles.splice(mIndex, 1)
-              this.setState((state) => ({
-                formData: {
-                    ...state,
-                    ...this.state.formData
-                }
-            }))
+                middles.splice(mIndex, 1)
+                this.setState((state) => ({
+                    formData: {
+                        ...this.state.formData
+                    }
+                }))
             },
             onCancel() {
               message.info('取消删除~')
@@ -300,7 +299,6 @@ class AddSchema extends Component<IProps, IState> {
         edge_schema.push(schema)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -320,7 +318,6 @@ class AddSchema extends Component<IProps, IState> {
         edge_schema.splice(index, 1)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -340,7 +337,6 @@ class AddSchema extends Component<IProps, IState> {
         vertex_schema.splice(index, 1)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -360,7 +356,6 @@ class AddSchema extends Component<IProps, IState> {
         vertex_schema.push(schema)
         this.setState((state) => ({
             formData: {
-                ...state,
                 ...this.state.formData
             }
         }))
@@ -465,12 +460,12 @@ class AddSchema extends Component<IProps, IState> {
                                     <div style={{ marginBottom: 10}}>
                                         <div style={{ display: 'flex' }}>
                                             <label style={{ width: 115, textAlign: 'right', marginTop: 3, marginRight: 3 }}>middles:</label>
-                                            <Input
-                                                className="meddle"
-                                                placeholder="请输入并按回车键添加..."
-                                                style={{ width: 200 }}
-                                                onPressEnter={ (e) => this.onAddMiddles(e, index) }
-                                                onChange={(e) => this.onChangeMiddles(e, index) }
+                                            <Search
+                                                placeholder="请输入并点击添加键..."
+                                                allowClear
+                                                enterButton="添加"
+                                                style={{ width: 300 }}
+                                                onSearch={(value, e) => this.onAddMiddles(e, value, index)}
                                             />
                                         </div>
                                         { this.renderMiddle(item, index) }
@@ -562,8 +557,7 @@ class AddSchema extends Component<IProps, IState> {
                         })(
                             <Input placeholder="请输入graph_name..." onChange={ this.onGraphNameChange }></Input>   
                         )}
-                        
-					</Form.Item>	
+					</Form.Item>
 				</Form>
                 <div style={{ height: 500, overflowY: 'auto', width: '100%', boxSizing: 'border-box', display: "flex", flexWrap: 'wrap' }}>
                     <Card
