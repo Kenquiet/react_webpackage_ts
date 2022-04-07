@@ -160,10 +160,12 @@ class AddSchema extends Component<IProps, IState> {
     }
     onNameValueChange = (context: any) => {
         const { e, type, index , pIndex } = context
+        console.log(e, type, index , pIndex)
         const value = e.target.value
         const schema =  type === 'edge' ? this.state.formData.edge_schema : this.state.formData.vertex_schema
         const { attrs } = schema[pIndex]
         attrs[index].name = value
+        console.log(this.state.formData)
         this.setState((state) => ({
             formData: {
                 ...this.state.formData
@@ -373,22 +375,24 @@ class AddSchema extends Component<IProps, IState> {
                             key={index + 'atterEle' + type}
                         >
                             <Form.Item label='name: '>
-                                {getFieldDecorator('name', {
+                                {getFieldDecorator('name'+type, {
                                     rules: [{ required: true, message: 'Please input name!' }]
                                 })(
                                     <Input
                                         placeholder="请输入name..."
+                                        autoComplete="off"
                                         style={{ width: 100, marginRight: 10 }}
                                         onChange={(e) => this.onNameValueChange({e, index, type, pIndex})}
                                     />
                                 )} 
                             </Form.Item>
                             <Form.Item label='type: '>
-                                {getFieldDecorator('type', {
+                                {getFieldDecorator('type'+type, {
                                     rules: [{ required: true, message: 'Please input type!' }]
                                 })(
                                     <Input
                                         placeholder="请输入type..."
+                                        autoComplete="off"
                                         style={{ width: 100, marginRight: 10 }}
                                         onChange={(e) => this.onTypeValueChange({e, index, type, pIndex})}
                                     />
@@ -417,7 +421,7 @@ class AddSchema extends Component<IProps, IState> {
         }
         const edgeSchemaEle = () => {
             return (
-                <Tabs size="small" defaultActiveKey="tab1" type="editable-card" onEdit={ this.onEditEdgeTab } >
+                <Tabs defaultActiveKey="tab1" type="editable-card" onEdit={ this.onEditEdgeTab } >
                     {this.state.formData.edge_schema.map((item, index) => {
                         return (
                             <TabPane tab={ `tab${index + 1}` } key={ index + 'edgeTabPane'}>
@@ -426,30 +430,33 @@ class AddSchema extends Component<IProps, IState> {
                                         labelCol={{ span: 5 }}
                                         wrapperCol={{ span: 19}}>
                                         <Form.Item label='schema_name:'>
-                                            {getFieldDecorator('schema_name', {
+                                            {getFieldDecorator('schema_name_edgeTabPane'+ index, {
                                                 rules: [{ required: true, message: 'Please input schema_name!' }]
                                             })(
                                                 <Input
                                                     placeholder="请输入schema_name..."
+                                                    autoComplete="off"
                                                     style={{ width: 200, marginRight: 10 }}
                                                     onChange={(e) => this.onEdgeSchemaName(e, index)}
                                                 />
                                             )}
                                         </Form.Item>
                                         <Form.Item label='src:'>
-                                            {getFieldDecorator('src', {
+                                            {getFieldDecorator('src' + index, {
                                                 rules: [{ required: true, message: 'Please input src!' }]
                                             })(
                                                 <Input
                                                     placeholder="请输入src..."
+                                                    autoComplete="off"
                                                     style={{ width: 200, marginRight: 10 }}
                                                     onChange={(e) => this.onEdgeSrc(e, index)}
                                                 />
                                             )}
                                         </Form.Item>
                                         <Form.Item label='dst:'>
-                                            {getFieldDecorator('dst')(
+                                            {getFieldDecorator('dst' + index)(
                                                 <Input
+                                                    autoComplete="off"
                                                     placeholder="请输入dst..."
                                                     style={{ width: 200, marginRight: 10 }}
                                                     onChange={(e) => this.onEdgeDst(e, index)}
@@ -461,6 +468,7 @@ class AddSchema extends Component<IProps, IState> {
                                         <div style={{ display: 'flex' }}>
                                             <label style={{ width: 115, textAlign: 'right', marginTop: 3, marginRight: 3 }}>middles:</label>
                                             <Search
+                                                autoComplete="off"
                                                 placeholder="请输入并点击添加键..."
                                                 allowClear
                                                 enterButton="添加"
@@ -484,7 +492,7 @@ class AddSchema extends Component<IProps, IState> {
 
         const vertexSchemaEle = () => {
             return (
-                <Tabs size="small" defaultActiveKey="tab1"  type="editable-card" onEdit={ this.onEditEdgeTab }>
+                <Tabs defaultActiveKey="tab1"  type="editable-card" onEdit={ this.onEditEdgeTab }>
                     {
                         this.state.formData.vertex_schema.map((item, index) => {
                             return (
@@ -494,8 +502,9 @@ class AddSchema extends Component<IProps, IState> {
                                             labelCol={{ span: 4 }}
                                             wrapperCol={{ span: 20 }}>
                                             <Form.Item label='schema_name:'>
-                                                {getFieldDecorator('schema_name')(
+                                                {getFieldDecorator('schema_name_vertexTabPane'+ index)(
                                                     <Input
+                                                        autoComplete="off"
                                                         placeholder="请输入schema_name..."
                                                         style={{ width: 200, marginRight: 10 }}
                                                         onChange={(e) => this.onVertexSchemaName(e, index)}
@@ -503,8 +512,9 @@ class AddSchema extends Component<IProps, IState> {
                                                 )}
                                             </Form.Item>
                                             <Form.Item label='vertex_name:'>
-                                                {getFieldDecorator('vertex_name')(
+                                                {getFieldDecorator('vertex_name'+ index)(
                                                     <Input
+                                                        autoComplete="off"
                                                         placeholder="请输入vertex_name..."
                                                         style={{ width: 200, marginRight: 10 }}
                                                         onChange={(e) => this.onVertexName(e, index)}
@@ -555,7 +565,11 @@ class AddSchema extends Component<IProps, IState> {
                                 }
                             }]
                         })(
-                            <Input placeholder="请输入graph_name..." onChange={ this.onGraphNameChange }></Input>   
+                            <Input
+                                autoComplete="off"
+                                placeholder="请输入graph_name..."
+                                onChange={ this.onGraphNameChange }
+                            ></Input>   
                         )}
 					</Form.Item>
 				</Form>
