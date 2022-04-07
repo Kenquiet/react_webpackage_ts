@@ -375,9 +375,17 @@ class AddSchema extends Component<IProps, IState> {
                             key={index + 'atterEle' + type}
                         >
                             <Form.Item label='name: '>
-                                {getFieldDecorator('name'+type, {
+                                
+                                {type === 'edge' ? getFieldDecorator('name'+type, {
                                     rules: [{ required: true, message: 'Please input name!' }]
                                 })(
+                                    <Input
+                                        placeholder="请输入name..."
+                                        autoComplete="off"
+                                        style={{ width: 100, marginRight: 10 }}
+                                        onChange={(e) => this.onNameValueChange({e, index, type, pIndex})}
+                                    />
+                                ) : (
                                     <Input
                                         placeholder="请输入name..."
                                         autoComplete="off"
@@ -387,9 +395,16 @@ class AddSchema extends Component<IProps, IState> {
                                 )} 
                             </Form.Item>
                             <Form.Item label='type: '>
-                                {getFieldDecorator('type'+type, {
+                                {type === 'edge' ? getFieldDecorator('type'+type, {
                                     rules: [{ required: true, message: 'Please input type!' }]
                                 })(
+                                    <Input
+                                        placeholder="请输入type..."
+                                        autoComplete="off"
+                                        style={{ width: 100, marginRight: 10 }}
+                                        onChange={(e) => this.onTypeValueChange({e, index, type, pIndex})}
+                                    />
+                                ): ( 
                                     <Input
                                         placeholder="请输入type..."
                                         autoComplete="off"
@@ -454,7 +469,9 @@ class AddSchema extends Component<IProps, IState> {
                                             )}
                                         </Form.Item>
                                         <Form.Item label='dst:'>
-                                            {getFieldDecorator('dst' + index)(
+                                            {getFieldDecorator('dst' + index, {
+                                                rules: [{ required: true, message: 'Please input dst!' }]
+                                            })(
                                                 <Input
                                                     autoComplete="off"
                                                     placeholder="请输入dst..."
@@ -547,23 +564,15 @@ class AddSchema extends Component<IProps, IState> {
                 width={ 1300 }
             >
 				<Form
-					labelCol={{ span: 2 }}
-					wrapperCol={{ span: 22 }}
+					labelCol={{ span: 4 }}
+					wrapperCol={{ span: 20 }}
 					name="form-demo"
 					autoComplete="off"
 					style={{ background: '#fff', padding: 10, margin: 10, width: '50%' }}
 				>
-					<Form.Item label='图名:'>
+					<Form.Item label='graph_name:'>
                         {getFieldDecorator('graph_name', {
-                            rules: [{
-                                type: 'string',
-                                validator: (rule, value) => {
-                                    if(value === '' || value === undefined) {
-                                        return Promise.reject('图名不能为空！')
-                                    }
-                                    return Promise.resolve()
-                                }
-                            }]
+                            rules: [{ required: true, message: 'Please input graph_name!' }]
                         })(
                             <Input
                                 autoComplete="off"
